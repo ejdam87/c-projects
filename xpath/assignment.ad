@@ -1,0 +1,369 @@
+---
+title: "HW04: XPath"
+layout: "homework"
+list-of-files: ["*.c", "*.h"]
+solution-path: /home/kontr/pb071/hw04/xpath
+publish: now
+deadline-early: 2022-04-24 24:00
+deadline-final: 2022-04-27 24:00
+authors:
+  - xondika
+  - xkrchna1
+  - xkucerak
+  - xhrbace1
+
+---
+
+== Představení úkolu
+
+Extensible Markup Language --
+https://cs.wikipedia.org/wiki/Extensible_Markup_Language[XML] je obecný
+značkovací jazyk, který umožňuje pomocí značek rozšířit dokument o netextové
+prvky a snadno reprezentovat data.
+Hlavním účelem XML je serializace dat -- tedy zápis, přenos a zobrazení dat v
+jednotném formátu pro všechny uživatele.
+
+Ukládání dat nám samozřejmě tolik nepřinese, pokud s nimi neumíme pracovat --
+proto si pro dotazování nad daným XML dokumentem vytvoříme dotazovací jazyk
+https://cs.wikipedia.org/wiki/XPath[XPath].
+Ten nám pomocí zadané cesty umožní vybírat jednotlivé elementy z dokumentu
+a vhodně s nimi pracovat.
+
+Nastoupili jste do firmy, kde na projektu před vámi pracoval junior z FI MUNI
+a rozepsal parser XML souborů.
+Bohužel na pátý pokus nedal IB002 a odstěhoval se z Brna.
+Nyní je na vás dokončit práci, kterou za svůj čas ve firmě nezvládl.
+
+== Zadání
+
+Jádrem domácí úlohy bude zparsovat samotný XML soubor a převést si ho do vhodné
+interní reprezentace.
+Parser XML souboru už je dodaný, ale bude jej potřeba rozšířit: je tedy důležité
+jeho funkcionalitu pochopit a naučit se s ním pracovat.
+
+Výsledný program bude pracovat s XPath dotazy a jeho výstupem bude textová
+odpověď na dotaz nebo soubor obsahující XML s vybranými uzly.
+
+Použití programu bude vypadat takto:
+
+[source]
+----
+./xpath [OPTIONS] QUERY
+----
+
+Kde ``OPTIONS`` jsou přepínače programu a ``QUERY`` je XPath dotaz (popsáno níže).
+
+### Přepínače:
+
+Vstup a výstup programu můžete nakonfigurovat pomocí následujících přepínačů:
+
+``-i FILE, --input  FILE``::
+``FILE`` umožňuje specifikovat vstupní soubor s XML daty.
+Pokud přepínač není specifikován, program čeká na text ze standardního vstupu,
+zakončen ``EOF``.
+
+
+``-o FILE, --output FILE``::
+``FILE`` umožňuje specifikovat výstupní soubor.
+Pokud přepínač není specifikován, odpověď na zadaný dotaz se vypíše na
+standardní výstup.
+
+``-t, --text``::
+Výstupem programu bude text ve vybraných uzlech.
+
+``-x, --xml``::
+Výstupem programu bude XML element.
+
+Přepínače ``--text`` a ``--xml`` nelze kombinovat, tedy nemůžeme specifikovat
+zároveň textový i XML výstup.
+
+Každý z přepínačů ``--input`` a ``--output`` musí být zadán maximálně jednou, tedy
+nemůžeme specifikovat více různých vstupů a výstupů.
+
+
+### Chování programu
+
+Program musí selhat s nenulovou hodnotou, a na *standardní chybový výstup*
+napsat vhodnou hlášku pokud:
+
+* jsou špatně použity přepínače,
+* vstupní soubor neexistuje nebo jej uživatel nemá právo číst,
+* vstupní soubor není validní XML podle <<Zjednodušená specifikace jazyka XML, pravidel>>,
+* XPath není validní dotaz podle <<Dotaz XPath, pravidel>>,
+* selže ``malloc`` nebo jiná knihovní funkce a už nebude mít smysl pokračovat
+  v průběhu programu.
+
+
+== Požadavky
+
+### Zjednodušená specifikace jazyka XML
+
+V tomto úkolu budeme používat zjednodušený formát XML.
+Ten je definován následovně:
+
+XML soubor obsahuje *právě* jeden kořenový <<ELEMENT>> a na začátku i na konci
+souboru může být libovolný počet bílých znaků.
+
+#### ELEMENT
+
+* je hlavním stavebním kamenem našich XML souborů
+* máme 2 druhy:
+  ** prázdný element
+    ``<``{nbsp}<<JMÉNO>>{nbsp}``/>`` nebo ``<``{nbsp}<<JMÉNO>> <<ATRIBUTY>>{nbsp}``/>``
+  ** neprázdný element
+
+    *** začíná počátečním tagem: ``<``{nbsp}<<JMÉNO>> ``>`` nebo ``<``{nbsp}<<JMÉNO>> <<ATRIBUTY>>{nbsp}``>``
+    *** končí ukončovacím tagem: ``</``{nbsp}<<JMÉNO>>{nbsp}``>``
+* <<JMÉNO>> v počátečním a zakončujícím tagu musí být shodné
+* mezi počátečním a zakončujícím tagem se může vyskytnout:
+  ** <<TEXT>>
+  ** neprázdný seznam <<ELEMENT>>ů
+
+* kolem ``<``, ``</`` a ``/>`` může být libovolný (i nulový) počet bílých znaků
+* ``</`` a ``/>`` musí být bez mezery (tedy např. ``< /``, ani ``/ >`` se ve
+  validním XML souboru nesmí vyskytnout)
+* mezi jménem a atributy musí být *alespoň jeden* bílý znak
+
+#### JMÉNO
+* povolené znaky jsou písmena anglické abecedy, čísla a ``_``, ``-``, ``.`` a
+  ``:`` (podtržítko, spojovník, tečka, dvojtečka)
+* musí začínat písmenem nebo ``_`` (podtržítkem) -- tedy musí mít délku alespoň 1
+
+#### TEXT
+* obsahuje libovolné znaky z ASCII, kromě ``{lt}``, ``{gt}``, ``{amp}``,
+  ``{quot}``, ``'`` (menší než, větší než, ampersand, uvozovky, apostrof)
+
+[WARNING]
+<<TEXT>> může být i prázdný.
+
+#### ATRIBUT
+* má tvar <<JMÉNO>> ``=`` ``{quot}`` <<TEXT>> ``{quot}``
+* kolem ``=`` (rovná se) se může vyskytnout libovolný počet mezer
+
+#### ATRIBUTY
+* je to seznam <<ATRIBUT>>ů
+* <<ATRIBUT>>y jsou *unikátní*, nemůžou se tedy v jednom <<ELEMENT>>u vyskytnout
+  víckrát
+* musí být od sebe odděleny alespoň jedním bílým znakem
+
+
+Příklady <<ELEMENT>>ů pak můžou být:
+
+[source, xml]
+----
+<  student name="Roman Lacko" id = "396157"
+      nickname="Pazuzu"     birthyear="1954 B.C"  />
+----
+
+[source, xml]
+----
+< book >
+  <series>   The Lord of the Rings   </series>
+
+  <name>The Fellowship of the Ring</name>
+  <episode> 1 </episode>
+  <year>    1954</year>
+</ book >
+----
+
+
+Validní XML soubor ve výsledku může vypadat následovně:
+
+
+[source, xml]
+----
+<bookstore>
+
+<book category="cooking">
+  <title lang="en">Everyday Italian</title>
+  <author>Giada De Laurentiis</author>
+  <year>2005</year>
+  <price>30.00</price>
+</book>
+
+<book category="children">
+  <title lang="en">Harry Potter</title>
+  <author>J K. Rowling</author>
+  <year>2005</year>
+  <price>29.99</price>
+</book>
+
+<book category="web">
+  <title lang="en">XQuery Kick Start</title>
+  <author>James McGovern</author>
+  <author>Per Bothner</author>
+  <author>Kurt Cagle</author>
+  <author>James Linn</author>
+  <author>Vaidyanathan Nagarajan</author>
+  <year>2003</year>
+  <price>49.99</price>
+</book>
+
+<book category="web">
+  <title lang="en">Learning XML</title>
+  <author>Erik T. Ray</author>
+  <year>2003</year>
+  <price>39.95</price>
+</book>
+
+</bookstore>
+----
+
+
+### Dotaz XPath
+
+Programu zadáváme cestu, která začíná kořenem a skládá se z výrazů oddělených
+lomítky.
+XPath musí obsahovat alespoň jeden výraz.
+
+``/EXPRESSION~1~/EXPRESSION~2~/.../EXPRESSION~n~``
+
+Výrazy (``EXPRESSION``) v XPath mají jeden z následujících tvarů:
+
+``name``::
+* vybere všechny uzly na dané úrovni s názvem ``name``
+* pro ``name`` platí stejná pravidla jako pro <<JMÉNO>> popsáno v XML.
+
+``name[i]``::
+* vybere ``i``-tý element s názvem ``name``
+* číslujeme od ``1``, tedy ``name[1]`` je první <<ELEMENT>> s názvem ``name``
+* pokud je číslo větší než počet elementů v daném elementu program neskončí
+  s chybou (jen se nic nevypíše)
+* v případě nekladného čísla program selže
+
+``name[@attribute]``::
+* vybere uzly s názvem ``name`` a atributem ``attribute``
+* pro ``attribute`` platí stejná pravidla jako pro <<JMÉNO>>
+
+``name[@attribute="value"]``::
+* vybere uzly ``name``, které mají v atributu ``attribute`` hodnotu ``value``
+* ``value`` obsahuje libovolné ASCII znaky
+
+
+Nad výše uvedeným příkladem jsou validní dotazy například:
+
+``/bookstore`` -- vrátí celou knihovnu beze změny
+
+``/bookstore/book[2]`` -- vrátí druhou knihu
+
+``/bookstore/book/author`` -- vybere všechny autory knih
+
+``/bookstore/book[@category="cooking"]`` -- vybere knihy o vaření
+
+
+Pokud vracíme XML, musíme zachovat vlastnost, že má právě jeden kořen.
+Pokud dotazu *odpovídá více uzlů*, stanou se následníky nového kořenového uzlu
+``<result>``.
+
+Při textovém výpisu vypíšeme text z vybraných uzlů a jejich podstromů zakončen
+novým řádkem.
+XML ignoruje bílé znaky na začátku a konci textu.
+Libovolně dlouhá neprázdná posloupnost bílých znaků ve středu textu bude vypsána
+jako jedna mezera.
+Pokud dotazu odpovídá více uzlů, vypíšeme obsah všech z nich, oddělen znaky
+nového řádku (``\n``).
+
+Příkladem validního XML může být:
+[source, xml]
+----
+<tag> Hello    World  </tag>
+----
+
+na čež nám dotaz na text uzlu vypíše ``Hello World``.
+
+
+Pro ilustraci doporučujeme vyzkoušet si, co na výše uvedených příkladech vypíše
+vzorová implementace.
+
+== Bonusové rozšíření
+
+
+### Wildcards [0.5 bodu]
+
+Upravte implementaci tak, aby dotaz XPath mohl obsahovat znak ``{asterisk}``
+(hvězdička) na místě, kde se očekává jméno nebo název atributu (``{asterisk}``
+se nemůže vyskytnou místo hodnoty atributu).
+
+* ``{asterisk}`` znamená, že vybereme všechny elementy na dané úrovni
+* ``name=[@{asterisk}]`` znamená, že vybereme ty elementy, které mají
+  *alespoň jeden* atribut
+* ``name[@{asterisk}={quot}value{quot}]`` znamená, že vybereme ty elementy,
+  které mají *nějaký atribut* s hodnotou ``value``
+
+Tyto možnosti se mohou i kombinovat, tedy je třeba vyřešit např i situaci
+``{asterisk}[@{asterisk}]``.
+
+
+### Resoluce znakových entit [1.5 bodu]
+
+Jazyk XML obsahuje speciální znaky, které mají syntaktický význam, např.
+``{amp}`` (ampersand), a nemůžou se vyskytovat v textu.
+Pokud je chceme vyjádřit, používáme pro ně určité sekvence znaků, tzv. znakové
+entity.
+
+Upravte implementaci tak, aby <<TEXT>> mohl obsahovat znakové entity.
+
+#### ZNAKOVÉ ENTITY
+* začínají ``{amp}`` (ampersandem) a končí ``;`` (středníkem).
+Následující tabulka ukazuje znak a jeho způsob zápisu:
+
+[role="table table-sm"]
+|===
+|znak|sekvence
+|``<`` (menší než) | ``\&lt;``
+|``>`` (větší než) | ``\&gt;``
+|``'`` (apostrof)  | ``\&apos;``
+|``"`` (uvozovky)  | ``\&quot;``
+|``&`` (ampersand) | ``\&amp;``
+|===
+
+* zároveň můžeme dané znaky zapsat pomocí jejich ASCII hodnoty jako
+  ``&#``ČÍSLO``;``, kde ČÍSLO je
+  ** v desítkové soustavě
+  ** v šestnáctkové soustavě, pak musí začínat písmenem ``x``
+* číslo musí reprezentovat znak z ASCII
+* v znakové entitě se nesmí vyskytnout mezera, tedy ``{amp} gt;``, ani ``&gt ;``
+  nejsou validní znakové entity.
+* pokud se v textu vyskytne nevalidní entita, tak program vypíše libovolnou
+  chybovou hlášku a skončí s nenulovým návratovým kódem.
+
+Př.: text ``a < b < c`` bychom do XML mohli zapsat jako ``a \&lt; b \&#60; c``
+
+Pokud narazíte na některou ze znakových entity, vaším úkolem je nahradit ji
+adekvátní značkou.
+Jsou 2 místa, kde se tyto entity můžou vyskytnout:
+
+* v textu -- nahradit při výpisu
+
+Máme-li XML soubor ``FILE`` s obsahem ``<candy>M\&amp;M\&apos;s</candy>``
+a spustíme příkaz ``./xpath -t -i FILE /candy``, program vypíše ``M&M's``.
+
+* v hodnotě atributů -- nahradit při filtrování pomocí XPath
+
+Máme-li XML soubor FILE s obsahem ``<mail message="I \&lt;\&#51; u"/>``
+a spustíme příkaz ``./xpath -x -i FILE '/mail[@message="I <3 u"]'`` program
+správně najde element, ale vypíše ``<mail message="I \&lt;\&#51; u"/>``.
+
+
+== Poznámky
+
+* Váš program bude sestaven ze všech souborů ``*.c`` a ``*.h``, které se nachází
+  v kořenové složce. Obsah ostatních složek nebudou brát testy v potaz. Při
+  úpravách tedy můžete libovolně měnit názvy souborů, případně soubory přidávat
+  či odebírat.
+
+* Jakkoliv těžké může být vyznat se v dodaném parseru, *nedoporučujeme* vám
+  snažit se ho napsat znovu, pokud nemáte znalosti gramatik a bezkontextových
+  jazyků, které se učí v následujících semestrech.
+  Použitá technika se jmenuje
+  https://cs.wikipedia.org/wiki/Anal%C3%BDza_rekurzivn%C3%ADm_sestupem[Recursive Descent Parsing].
+  Detaily parsování jsou jen pro zájemce, ale intuitivně algoritmus spočívá v
+  tom napsat si funkci pro každý element, který se v dokumentu může vyskytnout,
+  a vzájemně tyto funkce volat podle specifikace daného jazyka.
+
+* Formát textu je možné zadat pomocí gramatiky -- nějaké sady pravidel, které
+  udávají z čeho se skládají jednotlivé části.
+  Je spousta způsobů jak tyto pravidla zapsat a jedním z nich je
+  https://cs.wikipedia.org/wiki/Rozvinut%C3%A1_Backusova%E2%80%93Naurova_forma[EBNF].
+  Jediná dokumentace, která zbyla po předchozím kolegovi je EBNF gramatika
+  našeho jazyka, v souboru ``ebnf.txt``.

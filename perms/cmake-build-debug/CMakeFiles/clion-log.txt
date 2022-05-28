@@ -1,0 +1,10 @@
+C:\windows\system32\wsl.exe --distribution Ubuntu --exec /bin/bash -c "export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /mnt/c/Docs/Muni/PB071/hw05/cmake-build-debug && /usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' /mnt/c/Docs/Muni/PB071/hw05"
+Found test: /mnt/c/Docs/Muni/PB071/hw05/tests/cut_main_runner.c
+Found test: /mnt/c/Docs/Muni/PB071/hw05/tests/exitus.c
+Found test: /mnt/c/Docs/Muni/PB071/hw05/tests/tests-nanecisto.c
+Found test: /mnt/c/Docs/Muni/PB071/hw05/tests/tests.c
+Found test: /mnt/c/Docs/Muni/PB071/hw05/tests/utils.c
+Found test: /mnt/c/Docs/Muni/PB071/hw05/tests/wmain.c
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /mnt/c/Docs/Muni/PB071/hw05/cmake-build-debug

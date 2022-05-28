@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c99 -Wall -Wextra -pedantic  -rdynamic CMakeFiles/xpath.dir/main.c.o CMakeFiles/xpath.dir/managed_string.c.o CMakeFiles/xpath.dir/parser.c.o CMakeFiles/xpath.dir/vector.c.o CMakeFiles/xpath.dir/xparser.c.o CMakeFiles/xpath.dir/xpath.c.o  -o xpath 

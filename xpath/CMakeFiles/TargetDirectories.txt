@@ -1,0 +1,3 @@
+/mnt/c/Docs/Muni/PB071/prijebanauloha/CMakeFiles/rebuild_cache.dir
+/mnt/c/Docs/Muni/PB071/prijebanauloha/CMakeFiles/edit_cache.dir
+/mnt/c/Docs/Muni/PB071/prijebanauloha/CMakeFiles/xpath.dir

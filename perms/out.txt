@@ -1,0 +1,35 @@
+# file: .
+# owner: dzadam
+# group: dzadam
+# user::rwx
+# group::rwx
+# other::rwx
+
+# file: adir
+# owner: dzadam
+# group: dzadam
+# user::rwx
+# group::rwx
+# other::rwx
+
+# file: adir/x.txt
+# owner: dzadam
+# group: dzadam
+# user::rwx
+# group::rwx
+# other::rwx
+
+# file: a.txt
+# owner: dzadam
+# group: dzadam
+# flags: ss-
+# user::rwx
+# group::rwx
+# other::rwx
+
+# file: b.txt
+# owner: dzadam
+# group: dzadam
+# user::rwx
+# group::rwx
+# other::rwx

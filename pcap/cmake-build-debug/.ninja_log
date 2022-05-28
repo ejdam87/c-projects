@@ -1,0 +1,8 @@
+# ninja log v5
+2	116	6709491385009574	CMakeFiles/demo.dir/capture.c.obj	644221eca1e3b6a6
+78	163	6709492600758290	demo.exe	a8a87a312b466cd8
+1	77	6709492599928265	CMakeFiles/demo.dir/demo.c.obj	207cfc16c9cf275
+57	386	6699082381460952	CMakeFiles/demo.dir/pcap.c.obj	7dbd3e4e8f602a36
+2	82	6709496014028962	CMakeFiles/demo.dir/demo.c.obj	207cfc16c9cf275
+12	105	6709496014248960	CMakeFiles/demo.dir/capture.c.obj	644221eca1e3b6a6
+105	192	6709496015098943	demo.exe	a8a87a312b466cd8
