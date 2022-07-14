@@ -1,0 +1,3 @@
+/mnt/c/Docs/Git/c-projects/structures/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/mnt/c/Docs/Git/c-projects/structures/cmake-build-debug/CMakeFiles/edit_cache.dir
+/mnt/c/Docs/Git/c-projects/structures/cmake-build-debug/CMakeFiles/structures.dir
