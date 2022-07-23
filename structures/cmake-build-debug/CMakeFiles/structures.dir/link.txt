@@ -1,1 +1,0 @@
-/usr/bin/cc -g   CMakeFiles/structures.dir/main.c.o CMakeFiles/structures.dir/structures.c.o  -o structures 
