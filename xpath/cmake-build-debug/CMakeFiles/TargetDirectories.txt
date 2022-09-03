@@ -1,3 +1,0 @@
-C:/Docs/Muni/PB071/prijebanauloha/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Docs/Muni/PB071/prijebanauloha/cmake-build-debug/CMakeFiles/xpath.dir
-C:/Docs/Muni/PB071/prijebanauloha/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,4 +1,0 @@
-/mnt/c/Docs/Muni/PB071/hw05/cmaketrash/CMakeFiles/rebuild_cache.dir
-/mnt/c/Docs/Muni/PB071/hw05/cmaketrash/CMakeFiles/edit_cache.dir
-/mnt/c/Docs/Muni/PB071/hw05/cmaketrash/CMakeFiles/checkperms-tests.dir
-/mnt/c/Docs/Muni/PB071/hw05/cmaketrash/CMakeFiles/checkperms.dir

@@ -1,5 +1,0 @@
-C:/Docs/Muni/PB071/hw03/cmake-build-debug/CMakeFiles/nft-tests.dir
-C:/Docs/Muni/PB071/hw03/cmake-build-debug/CMakeFiles/nft.dir
-C:/Docs/Muni/PB071/hw03/cmake-build-debug/CMakeFiles/demo.dir
-C:/Docs/Muni/PB071/hw03/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Docs/Muni/PB071/hw03/cmake-build-debug/CMakeFiles/rebuild_cache.dir
